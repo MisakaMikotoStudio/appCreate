@@ -1,0 +1,119 @@
+buildscript {
+    allprojects {
+        gradle.projectsEvaluated {
+            allprojects {
+                jar {
+                    enabled = true
+                }
+                bootJar {
+                    enabled = true
+                }
+            }
+        }
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.3.4.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+    id 'application'
+}
+
+group = 'com.misaka'
+version = '0.0.1'
+sourceCompatibility = '1.8'
+
+repositories {
+    maven{url "http://maven.aliyun.com/nexus/content/groups/public"}
+    mavenCentral()
+}
+
+subprojects {
+    apply plugin: "io.spring.dependency-management"
+    apply plugin: "org.springframework.boot"
+    apply plugin: "java"
+    apply plugin: "idea"
+
+    // 编译sourceSets.main.java的参数
+    compileJava {
+        sourceCompatibility = 8
+        targetCompatibility = 8
+        options.compilerArgs << "-parameters"
+        options.encoding = "UTF-8"
+    }
+
+    // 编译sourceSets.test.java的参数
+    compileTestJava {
+        sourceCompatibility = 8
+        targetCompatibility = 8
+        options.compilerArgs << "-parameters"
+        options.encoding = "UTF-8"
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    /**
+     * 指定子模块所使用仓库的路径
+     * */
+    repositories {
+        maven{url "http://maven.aliyun.com/nexus/content/groups/public"}
+        mavenCentral()
+    }
+    /**
+     * 引入之模块jar包
+     */
+    dependencies {
+    }
+}
+
+project(":yuban-controller") {
+    dependencies {//项目所用到的依赖
+        compile project(":yuban-service")
+        compile project(":yuban-dao")
+        compile project(":yuban-common")
+
+        compile 'org.springframework.boot:spring-boot-starter-web:2.3.4.RELEASE'
+        testCompile 'org.springframework.boot:spring-boot-starter-test:2.3.4.RELEASE'
+    }
+}
+
+project(":yuban-service") {
+    dependencies {
+        compile project(":yuban-dao")
+        compile project(":yuban-common")
+
+        testCompile 'org.springframework.boot:spring-boot-starter-test:2.3.4.RELEASE'
+    }
+}
+
+project(":yuban-dao") {
+    dependencies {
+        compile project(":yuban-common")
+
+        compile 'mysql:mysql-connector-java:8.0.22'
+        compile 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.3'
+    }
+}
+
+project(":yuban-common") {
+    dependencies {
+        compile "com.alibaba:fastjson:1.2.73"
+        compile "org.projectlombok:lombok:1.18.12"
+        compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+        compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
+        compile 'io.springfox:springfox-swagger2:2.9.2'
+        compile 'io.springfox:springfox-swagger-ui:2.9.2'
+        compile "joda-time:joda-time:2.9.9"
+        compile 'cn.hutool:hutool-all:5.7.2'
+
+        compile "org.slf4j:slf4j-api:1.7.2"
+        compile "ch.qos.logback:logback-core:1.1.10"
+        compile "ch.qos.logback:logback-classic:1.1.10"
+        compile 'org.springframework.boot:spring-boot-starter-aop'
+
+        annotationProcessor "org.projectlombok:lombok:1.18.12"
+    }
+}

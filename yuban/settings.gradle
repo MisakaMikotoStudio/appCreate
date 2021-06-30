@@ -1,0 +1,5 @@
+rootProject.name = 'yuban'
+include ':yuban-controller'
+include ':yuban-service'
+include ':yuban-dao'
+include ':yuban-common'
